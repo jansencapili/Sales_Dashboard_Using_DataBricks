@@ -1,11 +1,11 @@
 {
   "datasets": [
     {
-      "name": "e7ffdcc5",
-      "displayName": "dim_customers",
+      "name": "0f0745bd",
+      "displayName": "dim_products",
       "config": {
         "version": "1.1",
-        "source": "workspace.sales.dim_customers",
+        "source": "workspace.sales.dim_products",
         "dimensions": [
           {
             "expr": "source.*"
@@ -22,11 +22,11 @@
       }
     },
     {
-      "name": "0f0745bd",
-      "displayName": "dim_products",
+      "name": "e7ffdcc5",
+      "displayName": "dim_customers",
       "config": {
         "version": "1.1",
-        "source": "workspace.sales.dim_products",
+        "source": "workspace.sales.dim_customers",
         "dimensions": [
           {
             "expr": "source.*"
@@ -82,18 +82,18 @@
       ],
       "relationships": [
         {
-          "name": "dim_customers_fact_sales",
+          "name": "relationship_0",
           "from": "dim_customers",
           "to": "fact_sales",
           "on": "`dim_customers`.`customer_key` = `fact_sales`.`customer_key`",
-          "cardinality": "CARDINALITY_MANY_TO_ONE"
+          "cardinality": "CARDINALITY_ONE_TO_MANY"
         },
         {
-          "name": "dim_products_fact_sales",
+          "name": "relationship_1",
           "from": "dim_products",
           "to": "fact_sales",
           "on": "`dim_products`.`product_key` = `fact_sales`.`product_key`",
-          "cardinality": "CARDINALITY_MANY_TO_ONE"
+          "cardinality": "CARDINALITY_ONE_TO_MANY"
         }
       ]
     }
@@ -124,7 +124,7 @@
               "frame": {
                 "showTitle": true,
                 "title": {
-                  "value": "Total Orders",
+                  "value": "<span style=\"text-align:center;display:block\"><span style=\"font-size: 20px;\">Total Orders</span></span>",
                   "fields": []
                 }
               },
@@ -174,7 +174,7 @@
               "frame": {
                 "showTitle": true,
                 "title": {
-                  "value": "Unique Customers",
+                  "value": "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 20px;\">Total Customers</span></span>",
                   "fields": []
                 }
               },
@@ -224,7 +224,7 @@
               "frame": {
                 "showTitle": true,
                 "title": {
-                  "value": "Total Revenue",
+                  "value": "<span style=\"font-size: 20px;\">Total Revenue</span>",
                   "fields": []
                 }
               },
@@ -287,8 +287,9 @@
             "spec": {
               "frame": {
                 "showTitle": true,
+                "showDescription": false,
                 "title": {
-                  "value": "Revenue Trend Over Time",
+                  "value": "<span style=\"font-size: 18px;\">Revenue Trend Over Time</span>",
                   "fields": []
                 }
               },
@@ -349,11 +350,11 @@
                       "expression": "`dim_products`.`category`"
                     },
                     {
-                      "name": "fact_sales__sales_amount",
-                      "expression": "`fact_sales`.`sales_amount`"
+                      "name": "sum(fact_sales__sales_amount)",
+                      "expression": "SUM(`fact_sales`.`sales_amount`)"
                     }
                   ],
-                  "disaggregated": true
+                  "disaggregated": false
                 }
               }
             ],
@@ -361,7 +362,7 @@
               "frame": {
                 "showTitle": true,
                 "title": {
-                  "value": "Revenue by Category",
+                  "value": "<span style=\"font-size: 18px;\">Revenue by Category</span>",
                   "fields": []
                 }
               },
@@ -384,7 +385,7 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "fact_sales__sales_amount",
+                  "fieldName": "sum(fact_sales__sales_amount)",
                   "format": {
                     "type": "number-currency",
                     "currencyCode": "USD",
@@ -406,7 +407,30 @@
                 "color": {
                   "fieldName": "dim_products__category",
                   "scale": {
-                    "type": "categorical"
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "Accessories",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 6
+                        }
+                      },
+                      {
+                        "value": "Bikes",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 7
+                        }
+                      },
+                      {
+                        "value": "Clothing",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 8
+                        }
+                      }
+                    ]
                   }
                 }
               },
@@ -435,11 +459,16 @@
                       "expression": "`dim_customers`.`country`"
                     },
                     {
-                      "name": "fact_sales__sales_amount",
-                      "expression": "`fact_sales`.`sales_amount`"
+                      "name": "sum(fact_sales__sales_amount)",
+                      "expression": "SUM(`fact_sales`.`sales_amount`)"
                     }
                   ],
-                  "disaggregated": true
+                  "filters": [
+                    {
+                      "expression": "`dim_customers`.`country` IS NOT NULL AND `dim_customers`.`country` != 'n/a'"
+                    }
+                  ],
+                  "disaggregated": false
                 }
               }
             ],
@@ -447,7 +476,7 @@
               "frame": {
                 "showTitle": true,
                 "title": {
-                  "value": "Revenue by Country",
+                  "value": "<span style=\"font-size: 18px;\">Revenue by Country</span>",
                   "fields": []
                 }
               },
@@ -460,7 +489,10 @@
               },
               "mark": {
                 "colors": [
-                  "#2563EB"
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  }
                 ]
               },
               "widgetType": "bar",
@@ -475,7 +507,7 @@
                   }
                 },
                 "y": {
-                  "fieldName": "fact_sales__sales_amount",
+                  "fieldName": "sum(fact_sales__sales_amount)",
                   "format": {
                     "type": "number-currency",
                     "currencyCode": "USD",
@@ -503,7 +535,7 @@
             "name": "date_range_filter",
             "queries": [
               {
-                "name": "dashboards/01f1bbf9f72d11be9604ea5bca3eb440/datasets/01f1bbfa08481ea9b1482869c9fcc531_order_date",
+                "name": "dashboards/01f1bbf9f72d11be9604ea5bca3eb440/datasets/01f1bc725f6e123db47e6e3fb33e2fe5_order_date",
                 "query": {
                   "datasetName": "a4a5a9b6",
                   "fields": [
@@ -531,7 +563,7 @@
               "frame": {
                 "showTitle": true,
                 "title": {
-                  "value": "Order Date",
+                  "value": "<span style=\"font-size: 20px;\">Year</span>",
                   "fields": []
                 }
               },
@@ -540,7 +572,7 @@
                 "fields": [
                   {
                     "fieldName": "order_date",
-                    "queryName": "dashboards/01f1bbf9f72d11be9604ea5bca3eb440/datasets/01f1bbfa08481ea9b1482869c9fcc531_order_date"
+                    "queryName": "dashboards/01f1bbf9f72d11be9604ea5bca3eb440/datasets/01f1bc725f6e123db47e6e3fb33e2fe5_order_date"
                   }
                 ]
               }
@@ -558,10 +590,15 @@
             "name": "dashboard_header",
             "multilineTextboxSpec": {
               "lines": [
-                "# Sales Performance Dashboard\n",
+                "# <span style=\"color: #E4E9EE;font-weight: 700;\">Sales Performance Dashboard</span>\n",
                 "\n",
-                "> Comprehensive overview of sales metrics, revenue trends, and performance analysis across products and regions. Use the date filter to analyze specific time periods."
+                "> <span style=\"color: #E4E9EE;\">**Comprehensive overview of sales metrics, revenue trends, and performance analysis across products and regions. Use the date filter to analyze specific time periods.**</span>"
               ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "light": "#2A835F"
+              }
             }
           },
           "position": {
@@ -579,47 +616,38 @@
   "uiSettings": {
     "theme": {
       "canvasBackgroundColor": {
-        "light": "#F5F7FA"
+        "light": "#F6FAFB",
+        "dark": "#1B1F23"
       },
       "widgetBackgroundColor": {
-        "light": "#FFFFFF"
+        "light": "#F5F5F5",
+        "dark": "#2A2F35"
+      },
+      "widgetBorderColor": {
+        "light": "#D7E1E9",
+        "dark": "#3C444C"
+      },
+      "fontColor": {
+        "light": "#374151",
+        "dark": "#E4E9EE"
+      },
+      "selectionColor": {
+        "light": "#5FA8D3",
+        "dark": "#5FA8D3"
       },
       "visualizationColors": [
-        "#1E88E5",
-        "#43A047",
-        "#FB8C00",
-        "#E53935",
-        "#8E24AA",
-        "#00ACC1",
-        "#FDD835",
-        "#F06292"
+        "#5FA8D3",
+        "#70BEE1",
+        "#89CCE7",
+        "#A1DAEC",
+        "#B3E6DC",
+        "#89C7A8",
+        "#6EAD80",
+        "#589F60",
+        "#478743",
+        "#356C2A"
       ],
-      "widgetHeaderAlignment": "LEFT",
-      "widgetPadding": 16,
-      "widgetMargin": 8,
-      "widgetCornerRadius": 8,
-      "widgetShadow": 10,
-      "fontSettings": {
-        "base": {
-          "fontFamily": "Inter",
-          "fontSize": 13
-        },
-        "widgetTitle": {
-          "fontFamily": "Inter",
-          "fontSize": 16,
-          "fontWeight": 600
-        },
-        "fieldTitle": {
-          "fontFamily": "Inter",
-          "textCase": "TEXT_CASE_UNSPECIFIED",
-          "fontSize": 12,
-          "fontWeight": 500
-        },
-        "fieldValue": {
-          "fontFamily": "Inter",
-          "fontSize": 13
-        }
-      }
+      "widgetHeaderAlignment": "LEFT"
     },
     "applyModeEnabled": false
   },
