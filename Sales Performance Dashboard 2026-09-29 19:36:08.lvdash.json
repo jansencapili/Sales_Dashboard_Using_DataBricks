@@ -1,0 +1,639 @@
+{
+  "datasets": [
+    {
+      "name": "e7ffdcc5",
+      "displayName": "dim_customers",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.sales.dim_customers",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "0f0745bd",
+      "displayName": "dim_products",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.sales.dim_products",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "a4a5a9b6",
+      "displayName": "fact_sales",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.sales.fact_sales",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    }
+  ],
+  "relationshipGraphs": [
+    {
+      "sources": [
+        {
+          "name": "dim_customers",
+          "datasetName": "e7ffdcc5"
+        },
+        {
+          "name": "dim_products",
+          "datasetName": "0f0745bd"
+        },
+        {
+          "name": "fact_sales",
+          "datasetName": "a4a5a9b6"
+        }
+      ],
+      "relationships": [
+        {
+          "name": "dim_customers_fact_sales",
+          "from": "dim_customers",
+          "to": "fact_sales",
+          "on": "`dim_customers`.`customer_key` = `fact_sales`.`customer_key`",
+          "cardinality": "CARDINALITY_MANY_TO_ONE"
+        },
+        {
+          "name": "dim_products_fact_sales",
+          "from": "dim_products",
+          "to": "fact_sales",
+          "on": "`dim_products`.`product_key` = `fact_sales`.`product_key`",
+          "cardinality": "CARDINALITY_MANY_TO_ONE"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "1949b5d2",
+      "displayName": "Sales Dashboard",
+      "layout": [
+        {
+          "widget": {
+            "name": "total_orders",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "countdistinct(fact_sales__order_number)",
+                      "expression": "COUNT(DISTINCT `fact_sales`.`order_number`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Total Orders",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "style": {
+                "fontColor": {
+                  "light": "#0F172A",
+                  "dark": "#EBEBEB"
+                }
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(fact_sales__order_number)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "total_customers",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "count(dim_customers__customer_key)",
+                      "expression": "COUNT(`dim_customers`.`customer_key`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Unique Customers",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "style": {
+                "fontColor": {
+                  "light": "#0F172A",
+                  "dark": "#EBEBEB"
+                }
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(dim_customers__customer_key)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "total_revenue",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "sum(fact_sales__sales_amount)",
+                      "expression": "SUM(`fact_sales`.`sales_amount`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Total Revenue",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "style": {
+                "fontColor": {
+                  "light": "#0F172A",
+                  "dark": "#EBEBEB"
+                }
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(fact_sales__sales_amount)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "compact"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "revenue_by_year",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "yearly(fact_sales__order_date)",
+                      "expression": "DATE_TRUNC(\"YEAR\", `fact_sales`.`order_date`)"
+                    },
+                    {
+                      "name": "sum(fact_sales__sales_amount)",
+                      "expression": "SUM(`fact_sales`.`sales_amount`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`fact_sales`.`order_date` IS NOT NULL"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Revenue Trend Over Time",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "style": {
+                "fontColor": {
+                  "dark": "#EBEBEB",
+                  "light": "#0F172A"
+                }
+              },
+              "mark": {
+                "colors": [
+                  "#2563EB"
+                ]
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "yearly(fact_sales__order_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(fact_sales__sales_amount)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "compact"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "revenue_by_category",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "dim_products__category",
+                      "expression": "`dim_products`.`category`"
+                    },
+                    {
+                      "name": "fact_sales__sales_amount",
+                      "expression": "`fact_sales`.`sales_amount`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Revenue by Category",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "style": {
+                "fontColor": {
+                  "dark": "#EBEBEB",
+                  "light": "#0F172A"
+                }
+              },
+              "mark": {
+                "colors": [
+                  "#2563EB",
+                  "#3B82F6",
+                  "#60A5FA",
+                  "#93C5FD",
+                  "#1E40AF"
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "fact_sales__sales_amount",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "compact"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "dim_products__category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "dim_products__category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "revenue_by_country",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "dim_customers__country",
+                      "expression": "`dim_customers`.`country`"
+                    },
+                    {
+                      "name": "fact_sales__sales_amount",
+                      "expression": "`fact_sales`.`sales_amount`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Revenue by Country",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "style": {
+                "fontColor": {
+                  "dark": "#EBEBEB",
+                  "light": "#0F172A"
+                }
+              },
+              "mark": {
+                "colors": [
+                  "#2563EB"
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "dim_customers__country",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "fact_sales__sales_amount",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "compact"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "date_range_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f1bbf9f72d11be9604ea5bca3eb440/datasets/01f1bbfa08481ea9b1482869c9fcc531_order_date",
+                "query": {
+                  "datasetName": "a4a5a9b6",
+                  "fields": [
+                    {
+                      "name": "order_date",
+                      "expression": "`order_date`"
+                    },
+                    {
+                      "name": "order_date_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "style": {
+                "fontColor": {
+                  "dark": "#EBEBEB",
+                  "light": "#0F172A"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Order Date",
+                  "fields": []
+                }
+              },
+              "widgetType": "filter-date-range-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "order_date",
+                    "queryName": "dashboards/01f1bbf9f72d11be9604ea5bca3eb440/datasets/01f1bbfa08481ea9b1482869c9fcc531_order_date"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "dashboard_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Sales Performance Dashboard\n",
+                "\n",
+                "> Comprehensive overview of sales metrics, revenue trends, and performance analysis across products and regions. Use the date filter to analyze specific time periods."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#F5F7FA"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FFFFFF"
+      },
+      "visualizationColors": [
+        "#1E88E5",
+        "#43A047",
+        "#FB8C00",
+        "#E53935",
+        "#8E24AA",
+        "#00ACC1",
+        "#FDD835",
+        "#F06292"
+      ],
+      "widgetHeaderAlignment": "LEFT",
+      "widgetPadding": 16,
+      "widgetMargin": 8,
+      "widgetCornerRadius": 8,
+      "widgetShadow": 10,
+      "fontSettings": {
+        "base": {
+          "fontFamily": "Inter",
+          "fontSize": 13
+        },
+        "widgetTitle": {
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": 600
+        },
+        "fieldTitle": {
+          "fontFamily": "Inter",
+          "textCase": "TEXT_CASE_UNSPECIFIED",
+          "fontSize": 12,
+          "fontWeight": 500
+        },
+        "fieldValue": {
+          "fontFamily": "Inter",
+          "fontSize": 13
+        }
+      }
+    },
+    "applyModeEnabled": false
+  },
+  "bookmarks": [
+    {
+      "name": "f77f1e77",
+      "displayName": "Sales Dasboard",
+      "widgetSelections": [
+        {
+          "pageName": "1949b5d2",
+          "widgetName": "date_range_filter",
+          "selectionJson": "{\"kind\":\"range\",\"dataType\":\"date\",\"min\":{\"value\":\"2011-08-02T00:00:00.000\"},\"max\":{\"value\":\"2013-09-03T23:59:59.999\"}}"
+        }
+      ]
+    }
+  ]
+}
